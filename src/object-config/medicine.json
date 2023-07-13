@@ -1,0 +1,55 @@
+{
+    "o_name":"medicine",
+    "o_label":"Remédio",
+    "columns":2,
+    "endpoints":{
+        "get":"medicine/find",
+        "get_all":"medicine/all",
+        "save":"medicine/save",
+        "update":"medicine/update"
+    },
+    "fields":[
+        {"f_name":"name",
+         "f_main":true,
+         "f_label":"Nome",
+         "f_type":"text"},
+
+          {"f_name":"description",
+          "f_label":"Descrição",
+          "f_type":"text"},
+
+          {"f_name":"price",
+          "f_label":"Preço",
+          "f_format":"money",
+          "f_type":"number"},
+          
+          {"f_name":"updatedById",
+            "f_label":"Atualizado por",
+            "f_format":"user",
+            "f_type":"text",
+            "f_hide_on_list":true,
+            "f_for_view":true},
+    
+            {"f_name":"updatedAt",
+            "f_label":"Atualizado em",
+            "f_format":"datetime",
+            "f_type":"date",
+            "f_hide_on_list":true,
+            "f_for_view":true},
+    
+            {"f_name":"createdById",
+            "f_label":"Criado por",
+            "f_format":"user",
+            "f_type":"text",
+            "f_hide_on_list":true,
+            "f_for_view":true},
+    
+            {"f_name":"createdAt",
+            "f_label":"Criado em",
+            "f_format":"datetime",
+            "f_type":"date",
+            "f_hide_on_list":true,
+            "f_for_view":true}
+    ]
+
+}

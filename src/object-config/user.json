@@ -1,0 +1,73 @@
+{
+    "o_name":"user",
+    "o_label":"Usuário",
+    "columns":2,
+    "endpoints":{
+        "get":"user/find",
+        "get_all":"user/all",
+        "save":"user/save",
+        "update":"user/update"
+    },
+    "fields":[
+        {"f_name":"name",
+         "f_main":true,
+         "f_label":"Nome",
+         "f_type":"text"},
+
+         {"f_name":"email",
+          "f_label":"E-Mail",
+          "f_type":"email"},
+
+          {"f_name":"login",
+          "f_label":"Login",
+          "f_type":"text"},
+
+          {"f_name":"password",
+          "f_label":"Senha",
+          "f_hide_on_list":true,
+          "f_type":"password"},
+
+          {"f_name":"profilePicture",
+          "f_label":"Foto do perfil",
+          "f_type":"text",
+          "f_format":"lookup",
+          "d_prop":"name",
+          "f_hide_on_list":true,
+          "lookup":{
+            "l_fa_logo":"fa-user",
+            "endpoints":{
+                "get":"filelink/all"
+            }
+          }},
+          
+        {"f_name":"updatedById",
+        "f_label":"Atualizado por",
+        "f_format":"user",
+        "f_type":"text",
+        "f_hide_on_list":true,
+        "f_for_view":true},
+
+        {"f_name":"updatedAt",
+        "f_label":"Atualizado em",
+        "f_format":"datetime",
+        "f_type":"date",
+        "f_hide_on_list":true,
+        "f_for_view":true},
+
+        {"f_name":"createdById",
+        "f_label":"Criado por",
+        "f_format":"user",
+        "f_type":"text",
+        "f_hide_on_list":true,
+        "f_for_view":true},
+
+        {"f_name":"createdAt",
+        "f_label":"Criado em",
+        "f_format":"datetime",
+        "f_type":"date",
+        "f_hide_on_list":true,
+        "f_for_view":true}
+  
+    ]
+
+}
