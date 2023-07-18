@@ -1,7 +1,8 @@
 
 import { toast } from 'react-toastify';
+import { get } from './requisitions';
 
-const basePath = '/saude-front'
+const basePath = '/usam'
 
 export { basePath }
 
@@ -18,7 +19,7 @@ const errorMessage = (m)=>{
 
 export function validateUser(){
     let user = localStorage.getItem('logged_user')
-    if(user == null || user == undefined){
+    if(user === null || user === undefined){
         errorMessage("Por Favor, faça login para acessar a página")
         window.location.href = basePath+"/"
     }
@@ -31,6 +32,15 @@ export function setUser(user){
 export function getUser(){
     var usr = JSON.parse(localStorage.getItem('logged_user'))
     return usr ? usr:{} 
+}
+
+export async function getUpToDateUser(){
+    var usr = JSON.parse(localStorage.getItem('logged_user'))
+    if(usr.id){
+        return usr = await get('user/'+usr.id)
+    }
+
+    return {}
 }
 
 

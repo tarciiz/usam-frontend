@@ -1,0 +1,48 @@
+{
+    "o_name":"profile",
+    "o_label":"Perfil",
+    "o_plural_label":"Perfis",
+    "columns":2,
+    "endpoints":{
+        "get":"profile/{id}",
+        "get_all":"profile/all",
+        "get_page":"profile/all/view",
+        "save":"profile/save",
+        "update":"profile/update",
+        "delete":"profile/delete/{id}"
+    },
+    "fields":[
+        {"f_name":"name",
+         "f_main":true,
+         "f_label":"Nome",
+         "f_type":"text"},
+
+         {"f_name":"description",
+          "f_label":"Descrição",
+          "f_type":"text"}
+    ],
+    "related":[
+        {
+            "o_name":"user",
+            "o_label":"Usuário",
+            "o_plural_label":"Usuários",
+            "columns":2,
+            "endpoints":{
+                "get":"user/{id}",
+                "get_page":"user/profile/view/{id}"
+            },
+            "fields":[
+                {"f_name":"name",
+                 "f_main":true,
+                 "f_label":"Nome",
+                 "f_type":"text"},
+        
+                 {"f_name":"email",
+                  "f_label":"E-Mail",
+                  "f_type":"email"}
+            ]
+        }
+
+    ]
+
+}

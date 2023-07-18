@@ -1,15 +1,12 @@
-import react from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeartbeat } from '@fortawesome/free-solid-svg-icons'
-import { toast } from 'react-toastify';
+import {useState} from 'react';
 import { login_user } from '../config/requisitions';
-import { get } from '../config/requisitions';
 import { setUser} from '../config/session';
 import { useNavigate } from 'react-router-dom';
 
+import { Button, TextInputField, Pane, toaster, Spinner} from 'evergreen-ui'
 
 function Login(){
-    let inputBg = {'background-color': '#E9ECEF'};
+    const [isLoggingIn, setIsLogginIn] = useState(false)
     const navigate = useNavigate();
 
     const handleNav = () => {
@@ -21,71 +18,94 @@ function Login(){
     var password
 
     const errorMessage = (m)=>{
-        toast.error(m, {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+        toaster.danger(m, {
+            duration: 3,
           });
     }
     const successMessage = (m)=>{
-        toast.success(m, {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+        toaster.success(m, {
+            duration: 3,
           });
     }
 
+
     
-    return(<div class="d-flex flex-column align-items-center">
-                <FontAwesomeIcon style={{'color': '#CD0000', 'width':'115px', 'height':'101px'}} icon={faHeartbeat} />
+    return(<Pane clearfix
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                flexDirection="column"
+                width={'100vw'}
+                height={'100vh'}>
+        <Pane
+            elevation={3}
+            float="left"
+            width={'60%'}
+            height={'60%'}
+            margin={24}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            flexDirection="column">
 
+            {isLoggingIn ? 
+                <Spinner />
+            :<>
+                <h1 class="bp5-heading">Bem-vindo!</h1>
+
+                <div>
+                    <TextInputField
+                        label="Login ou email"
+                        placeholder="Digie seu email"
+                        onChange={(e)=>{
+                            login = e.target.value
+                        }}
+                    />
+
+                    <TextInputField
+                        label="Senha"
+                        placeholder="Digite sua senha"
+                        type="password"
+                        onChange={(e)=>{
+                            password = e.target.value
+                        }}
+                    />
+
+                <p>Esqueceu a senha?</p>
+                <Button marginRight={16} appearance="primary" onClick={()=>{doLogin()}}>
+                    Login
+                </Button>
+                </div>
+        </>
+        }
+        </Pane>
         
-                <h1 class="p-3 display-3"><b>Bem-vindo!</b></h1>
-
-                <label for="email" class="align-self-start mb-2 ">Login ou email</label>
-                <input type="email" style={inputBg} class="mb-3 form-control" id="email" aria-describedby="emailHelp" placeholder="Login ou email" onChange={(e)=>{
-                    login = e.target.value
-
-                }}/>
-
-                <label for="email" class="align-self-start mb-2 ">Senha</label>
-                <input type="password" style={inputBg} class="mb-3 form-control" id="email" aria-describedby="emailHelp" placeholder="Password" onChange={(e)=>{
-                    password = e.target.value
-
-                }}/>
-
                 
-                <a class="link-opacity-25 align-self-start" href="#">Esqueceu a senha?</a>
-                <button type="button" class="btn btn-primary align-self-end" onClick={()=>{
-                    console.log('Login ', login)
-                    console.log('Senha ', password)
+        </Pane>)
 
-                    login_user(login, password).then(result=>{
-                        console.log("Result ", result)
+    function doLogin(){
+        setIsLogginIn(true)
+        
 
-                        if(result == null || result === undefined){
-                            errorMessage('Verifique as credencias e tente novamente.')
+        login_user(login, password).then(result=>{
+            
 
-                        }else{
-                            successMessage('Bem-vindo, ' +result.name)
+            if(result == null || result === undefined){
+                errorMessage('Verifique as credencias e tente novamente.')
+
+            }else{
+                successMessage('Bem-vindo, ' +result.name)
 
 
-                            setUser(result)
-                            handleNav();
-                        }
-                    }).catch(error=>{
-                        console.log('Error ', error.text())
-                        errorMessage(error.text())
-                    })
-                }}>Login</button>
-
-           </div>)
+                setUser(result)
+                handleNav();
+            }
+        }).catch(error=>{
+            
+            errorMessage('error')
+            setIsLogginIn(false)
+        })
+    }
 }
 
 export default Login;

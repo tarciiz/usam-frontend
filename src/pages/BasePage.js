@@ -1,24 +1,42 @@
 import Menu from "../components/Menu";
 
+import { Pane, Heading } from 'evergreen-ui';
+
 
 function BasePage(props){
 
     return (
-    <div className="container-fluid">
-        <div className="row" style={{'height': '100vh'}}>
-            <div className="col-sm-2 m-0 p-0">
+        <div>
+            <Pane style={{width: '100%'}}>
                 <Menu/>
-            </div>
-            <div className="col-sm-10">
-                <div className="container" style={{"height": "100%"}}>
-                    <h4 className="pb-3 pt-3">{props.title}</h4>
+            </Pane>
+            <Pane >
+                {(props.title !== undefined && props.title !== null) ? 
+                <Pane background={'#e6e6eb'} marginTop="20px" marginBottom="20px"
+                      elevation={1}>
+                    <Heading size={900} padding={20}>
+                        {props.title}
 
+                        <div style={{float:'right'}}>
+                            {props.buttons}
+                        </div>
+                    </Heading>
+                    
+
+                </Pane>
+                :<></>
+                }
+
+                {/* Content */}
+                <Pane >
+                    
                     {props.children}
+                </Pane>
 
-                </div>
-            </div>
-        </div>
-    </div>)
+
+            </Pane>
+            
+        </div>)
 }
 
 export default BasePage;

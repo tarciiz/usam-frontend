@@ -1,22 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 import {post, get} from "../config/requisitions";
 import ImageCropper from "./ImageCropper";
 import LookupField from "./LookupField/LookupField";
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import 'react-toastify/dist/ReactToastify.css';
+import { Icon, EditIcon, TextInputField, Button, toaster, PeopleIcon, ShopIcon, BarcodeIcon, InheritedGroupIcon, MoreIcon, Popover, Position } from 'evergreen-ui';
+import 'bootstrap/dist/css/bootstrap.css';
+import { Link } from 'react-router-dom';
+import HoverPopover from './HoverPopover';
+import LookupPreview from './LookupPreview';
+
 
 function InsertUpdateRecord(props){
-    // const [loading, setLoading] = useState(false)
-
-    const [fields, setFields] = useState(props.configurations.fields)
-    const columns = props.configurations.columns
-    const objectName = props.configurations.o_label
-    const endpoint_save = props.configurations.endpoints.save
-    const endpoint_get = props.configurations.endpoints.get
-    const endpoint_update = props.configurations.endpoints.update
-
     //props need to have conf attribute
     const [arrays, setArrays] = useState([])
     const [rownum, setRownum] = useState(0)
@@ -26,9 +19,25 @@ function InsertUpdateRecord(props){
 
 
     const [object, setObject] = useState({})
-    const [existsObject, setExistsObject] = useState({})
+    const [existsObject, setExistsObject] = useState(props.existsObject ? props.existsObject:{})    
+    // const [loading, setLoading] = useState(false)
+    const [fields, setFields] = useState(props.configurations.fields)
+    const columns = props.configurations.columns
+    const objectName = props.configurations.o_label
+    const endpoint_save = props.configurations.endpoints.save
+    const endpoint_get = props.configurations.endpoints.get.replace('{id}', objectId)
+    const endpoint_update = props.configurations.endpoints.update
 
+
+    const iconMap = {
+        "BarcodeIcon": BarcodeIcon,
+        "PeopleIcon": PeopleIcon,
+        "ShopIcon": ShopIcon,
+        "InheritedGroupIcon": InheritedGroupIcon
+        // Add more mappings as needed
+    };
     useEffect(() => {
+
         setArrays(separateFieldsByColumns(fields, columns))
         setRownum(separateFieldsByColumns(fields, columns).length)
 
@@ -42,7 +51,18 @@ function InsertUpdateRecord(props){
         if(!f ) return "";
         if(f.f_for_view === true && (!forView)) return "";
         
-        let field = (<input id={f.f_name} class="form-control" name={f.f_name} type={f.f_type} onChange={e=>buildObject(e)} defaultValue={existsObject[f.f_name] ? existsObject[f.f_name]: ''}  step="0.01"/>)
+        let field = (<>
+            <TextInputField
+                id={f.f_name}
+                label={f.f_label}
+                placeholder={f.f_label}
+                name={f.f_name} type={f.f_type} 
+                onChange={e=>buildObject(e)} 
+                defaultValue={existsObject[f.f_name] ? existsObject[f.f_name]: ''}  
+                step="0.01"
+            />
+            
+        </>)
 
         if(f.f_format){
             switch(f.f_format){
@@ -61,8 +81,16 @@ function InsertUpdateRecord(props){
                 (typeof existsObject[f.f_name]  === "object")&&f.f_format==="lookup"? 
                     (
                         <>
-                            <i class={"fas "+f.lookup.l_fa_logo} style={{'marginRight':'10px'}}></i>
-                            <span>{existsObject[f.f_name][f.d_prop]}</span>
+                            <HoverPopover content={
+                                <LookupPreview configurations={f.lookup} objectId={existsObject[f.f_name].id} icon={iconMap[f.f_icon]}/>
+                            }>
+                                <Link to={ "/"+f.f_name+"/view?id="+existsObject[f.f_name].id}  >
+                                    
+                                    <span><Icon icon={iconMap[f.f_icon] } size={12}/>
+                                    &nbsp;{existsObject[f.f_name][f.d_prop]}</span>
+
+                                </Link>
+                            </HoverPopover>
                         </>
                     )
                 :existsObject[f.f_name]
@@ -89,14 +117,15 @@ function InsertUpdateRecord(props){
             field = (
                 <div style={{'borderBottom':'1px solid rgba(0, 0, 0, 0.2)'}}>
                     <label class="mb-1" id={f.f_name} name={f.f_name} style={{'width': '100%', 'display':'flex'}}>
-                        <b style={{'margin-right': 'auto'}}>
+                        <b style={{'marginRight': 'auto'}}>
                             {
                                 val
                             }
                         </b>
                         {f.f_for_view !== true? 
-                        <span class="icon-wrapper" style={{'position': 'relative'}}>
-                            <FontAwesomeIcon class="icon" style={{'color': 'gray', 'width':'16px', 'align-self':'center', 'opacity': isHovering ? '1':'0.3', 'transition': 'opacity 0.1s'}} icon={faPenToSquare} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} onClick={(e)=>{setForView(false)}}/>
+                        <span class="icon-wrapper" onClick={(e)=>{setForView(false)}} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} style={{'position': 'relative', 'color': 'gray', 'width':'16px', 'alignSelf':'center', 'opacity': isHovering ? '1':'0.3', 'transition': 'opacity 0.1s'}}>
+                            
+                            <Icon icon={EditIcon} size={15} />
                         </span>
                         : ''}
                     </label>
@@ -105,11 +134,13 @@ function InsertUpdateRecord(props){
         }
 
         return (
-                <div style={{'marginBottom':'15px'}}>
-                    <label htmlFor={f.f_name} style={{color:'gray'}}>{f.f_label}</label>
-                    <br/>
-            
+                <div style={{'marginBottom':'15px', overflow: 'visible'}}>
+                    {forView ? <><label htmlFor={f.f_name} style={{color:'gray'}}>{f.f_label}</label> <br></br> <br></br></>:<></>
+                    }
+                    
                     {field}
+
+                    {forView? <><br></br></>:<></>}
                 </div>
                 
             )
@@ -134,7 +165,11 @@ function InsertUpdateRecord(props){
                     ))
                 }
                 <br/>
-                {forView ? '':<button class="btn btn-primary" onClick={()=>{saveObject()}}>Salvar</button>}
+                {forView ? '':(<div style={{float:'right'}}>
+                        <Button onClick={()=>{cancelEdit()}} marginRight={7} >Cancelar</Button>
+                        <Button appearance="primary" onClick={()=>{saveObject()}}>Salvar</Button>
+                    </div>
+                )}
 
             </div>
 
@@ -142,107 +177,117 @@ function InsertUpdateRecord(props){
     )
 
     function saveObject(){
-        console.log("Object to save", object)
 
-        var end =  object.id ? endpoint_update: endpoint_save;
+        if(object.id){
+            object.id = object.id.toString()
+        }
         
-        console.log("Save on ", end)
+        var end =  object.id ? endpoint_update: endpoint_save;
+
+        if(props.deafultObjProp){
+            for (let key in props.deafultObjProp) {
+                if (props.deafultObjProp.hasOwnProperty(key)) {
+                    object[key] = props.deafultObjProp[key];
+                }
+            }
+        }
+
         post(end, object).then(savedObj=>{
-            toast.success("Salvo com sucesso 😍!", {
-                position: toast.POSITION.TOP_CENTER,
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                });
+            console.log('Object to save ', object);
+            setObject({id:savedObj.id})
+            setExistsObject(savedObj)
+            getObject(savedObj.id)
 
-                get(endpoint_get+'/'+savedObj.id).then(ret=>{
-                    getObject(ret.id)
-                    console.log('Saved obj ', ret)
+            if(props.whenUpsertDo){
+                props.whenUpsertDo(savedObj)
+            
+            }
 
+            if(props.whenDone){
+                props.whenDone()
+            }
 
-                }).catch(error=>{
-                    toast.error("Erro, recarregue a página 😥!", {
-                        position: toast.POSITION.TOP_CENTER,
-                        autoClose: 2000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    setForView(false)
-                })
+            toaster.success("Salvo com sucesso 😍!", {
+                duration: 3,
+            });
+            setForView(true)
+        
+        }).catch(error=>{
+            setForView(false)
+            console.log(error)
+            toaster.danger("Erro ao salvar 😥!", {
+                duration: 3,
+            });
+        })
 
-
-            }).catch(error=>{
-                toast.error("Erro ao salvar 😥!", {
-                    position: toast.POSITION.TOP_CENTER,
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                setForView(false)
-
-            })
-
+    }
+    function cancelEdit(){
+        if(props.whenCancelDo){
+            props.whenCancelDo()
+        
+        }
+        setForView(true)
     }
 
     function buildObject(e){
         let obj = object
         obj[e.target.name] = e.target.value
-
+        if(obj.id)obj.id = obj.id.toString()
+        
         setObject(obj)
     }
 
     function separateFieldsByColumns(fields, columns) {
-        const rows = [];
+        const separatedFields = [];
+        const rows = Math.ceil(fields.length / columns);
+    
         let currentRow = [];
-      
-        fields.forEach(field => {
-          currentRow.push(field);
-      
-          if (currentRow.length === columns) {
-            rows.push(currentRow);
-            currentRow = [];
+        let currentIndex = 0;
+    
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < columns; j++) {
+            const field = fields[currentIndex];
+            currentRow.push(field);
+            currentIndex++;
+    
+            if (currentIndex === fields.length) {
+              break;
+            }
           }
-        });
-      
-        if (currentRow.length > 0) {
-          rows.push(currentRow);
+    
+          separatedFields.push(currentRow);
+          currentRow = [];
         }
-        return rows;
+    
+        return separatedFields;
     }
 
     function getObject(objectId){
         if(objectId){
-            get(endpoint_get+'/'+objectId).then(resultObj=>{
+            get(endpoint_get).then(resultObj=>{
 
-                get('user/find/'+resultObj.createdById).then(createdBy=>{
+                setExistsObject(resultObj)
+                setObject({"id":resultObj.id})
+                setForView(true)
+                // get('user/find/'+resultObj.createdById).then(createdBy=>{
 
-                    resultObj.createdBy = createdBy;
+                //     resultObj.createdBy = createdBy;
 
-                    get('user/find/'+resultObj.updatedById).then(createdBy=>{    
-                        resultObj.updatedBy = createdBy;
+                //     get('user/find/'+resultObj.updatedById).then(createdBy=>{    
+                //         resultObj.updatedBy = createdBy;
 
-                        console.log('resultObj', resultObj)
 
-                        setExistsObject(resultObj)
-                        setObject({"id":resultObj.id})
-                        setForView(true)
                         
-                    }).then(error=>{
-                        console.log(error);
-                    });
+                //     }).then(error=>{
+                    
+                //     });
 
-                }).then(error=>{
-                    console.log(error);
-                }); 
+                // }).then(error=>{
+                    
+                // }); 
 
             }).catch(error=>{
-                console.log("Erro ", error)
+                
             })
     
         }

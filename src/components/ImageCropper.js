@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { Modal, Button } from 'react-bootstrap';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import {uploadFile, post} from "../config/requisitions";
@@ -61,7 +60,6 @@ const ImageCropper = () => {
   const handleSave = () => {
     const canvas = cropper.getCroppedCanvas();
     const croppedImage = canvas.toDataURL("image/"+format);
-    console.log('croppedImage', croppedImage);
       
 
     var infoid = toast.info('Aguarde...', {
@@ -78,7 +76,7 @@ const ImageCropper = () => {
     fetch(croppedImage).then(res=>res.blob()).then(blob=>{
       const file = new File([blob], "file..jpg")
         uploadFile('public/upload', file, getUser().id).then(filelink=>{
-          console.log('FileLink ', filelink)
+          
           if(filelink === undefined) {
             throw 'Erro';
           }
@@ -88,20 +86,20 @@ const ImageCropper = () => {
         
           post('user/update', user).then(retUser=>{
               setUser(retUser)
-              console.log('User ', getUser())
+              
               window.location.reload(true)
               successMessage('Usuário atualizado com sucesso.')
               setLoading(false);
 
           }).catch(erro=>{
-              console.log('Erro ', erro)
+            
               errorMessage('Erro ao salvar foto de perfil, tente novamente.')
               setLoading(false);
 
           })
       
       }).catch(erro=>{
-          console.log('Erro ', erro)
+        
           setLoading(false);
 
       })
@@ -113,7 +111,7 @@ const ImageCropper = () => {
 
   return (
     <>
-      {loading && 
+      {/* {loading && 
           <div
           style={{
             position: "absolute",
@@ -157,7 +155,7 @@ const ImageCropper = () => {
             Save
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

@@ -1,0 +1,85 @@
+{
+    "o_name":"shop",
+    "o_label":"Loja",
+    "o_plural_label":"Lojas",
+    "columns":1,
+    "endpoints":{
+        "get":"shop/{id}",
+        "get_all":"shop/all",
+        "get_page":"shop/all/view",
+        "save":"shop/save",
+        "update":"shop/update",
+        "delete":"shop/delete/{id}"
+    },
+    "fields":[
+        {"f_name":"name",
+         "f_main":true,
+         "f_label":"Nome",
+         "f_type":"text"},
+
+          {"f_name":"description",
+          "f_label":"Descrição",
+          "f_type":"text"},
+
+          {"f_name":"legal_document",
+          "f_label":"CNPJ",
+          "f_type":"text"}
+          
+    ],
+    "related":[
+        {
+            "o_name":"product",
+            "o_label":"Produto",
+            "o_plural_label":"Produtos",
+            "columns":2,
+            "endpoints":{
+                "get":"product/{id}",
+                "get_page":"product/shop/view/{id}",
+                "get_all":"product/all",
+                "save":"product/save",
+                "update":"product/update",
+                "delete":"product/delete/{id}"
+            },
+            "fields":[
+                {"f_name":"name",
+                 "f_main":true,
+                 "f_label":"Nome",
+                 "f_type":"text"},
+        
+                 {"f_name":"description",
+                  "f_label":"Descrição",
+                  "f_type":"text"},
+        
+                 {"f_name":"barcode",
+                  "f_label":"Código de barras",
+                  "f_type":"text"}
+            ]
+        },
+        {
+            "o_name":"user",
+            "o_label":"Usuário",
+            "o_plural_label":"Usuários",
+            "columns":2,
+            "endpoints":{
+                "get":"user/{id}",
+                "get_page":"user/shop/view/{id}",
+                "get_all":"user/all",
+                "save":"user/save",
+                "update":"user/update",
+                "delete":"user/delete/{id}"
+            },
+            "fields":[
+                {"f_name":"name",
+                 "f_main":true,
+                 "f_label":"Nome",
+                 "f_type":"text"},
+        
+                 {"f_name":"email",
+                  "f_label":"E-Mail",
+                  "f_type":"email"}
+            ]
+        }
+
+    ]
+
+}

@@ -1,110 +1,192 @@
 import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Link} from 'react-router-dom';
-import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons'
+import { Link } from 'react-router-dom';
+import { get} from "../config/requisitions";
 
-import {post, get} from "../config/requisitions";
+import { v4 as uuid } from 'uuid';
+import { Pane, Pagination, Table, Select, Text, SearchInput, Group, IconButton, AddIcon } from 'evergreen-ui'
+import UpsertPopUp from './UpsertPopUp';
 
-function LisrRecord(props){
-    const fields = (props.configurations.fields.filter(field => {return field.f_hide_on_list !== true}))
-    const objectLabel = props.configurations.o_label
-    const objectName = props.configurations.o_name
-    const endpoint_get_all = props.configurations.endpoints.get_all
-    const [objectList, setObjectList] = useState([])
+
+function ListRecord(props){
     
+    const [isShown, setIsShown] = React.useState(false)
+    const objectId = props.objectId
+
+    const relatedFrom = (props.relatedFrom)
+    const completeView = (props.completeView != undefined) ? props.completeView : true
+
+    const fields = (props.configurations.fields.filter(field => {return field.f_hide_on_list !== true}))
+    const objectName = props.configurations.o_name
+    const objectPluralLabel = props.configurations.o_plural_label
+    const endpoint_get_page = props.configurations.endpoints.get_page.replace('{id}', props.objectId)
+    
+
     const [objectListSelected, setObjectListSelected] = useState([])
     const [objectListShow, setObjectListShow] = useState([])
-    const [displayNum, setDisplayNum] = useState(10)
+    const [displayNum, setDisplayNum] = useState(props.displayNum ? props.displayNum: 10)
     const [pageNum, setPageNum] = useState(1)
     const [maxPages, setMaxPages] = useState(1)
+    const [numberOfElements, setNumberOfElements] = useState(0)
+    const showSearch = (props.showSearch != undefined? props.showSearch: true)
+    const showNumPerPage = (props.showNumPerPage != undefined? props.showNumPerPage: true)
+    
+    const relatedListIndex = (props.relatedListIndex != undefined? props.relatedListIndex: 1)
+    
+    var pdd = objectId && !completeView ? '0px': '0px 30px 0px 30px'
 
-    useEffect(() => {
-        get(endpoint_get_all).then(resultList=>{
-            setObjectList(resultList)
-
-            formatList(resultList, displayNum, ((pageNum-1)*displayNum))
-
-            setMaxPages(Math.ceil(resultList.length / displayNum));
-
-        }).catch(error=>[
-            console.log('Error ', error)
-        ])
-
+    useEffect(() => {        
+        updateData(pageNum, displayNum)
     }, []);
 
+    const numOp = [
+        5,
+        10,
+        15,
+        20,
+        50,
+        100
+    ]
+
     return (
-        <div style={{"height":"89vh"}}>
-            <table class="table" style={{"height":"90%"}}>
-                <thead class="thead">
-                    <tr>
-                        <th scope="col">#</th>
-                        
-                        {fields.map(field=>(
-                            <th scope="col">{field.f_label}</th>
+        <div style={{padding: pdd}}>
+            {
+                objectId && !completeView ?
+                <>
+                    <Pane style={{backgroundColor:"#e6e6eb", height:"30px", display:"flex", alignItems:"center", justifyContent:'space-between'}} elevation={1}>
+                        <div style={{marginLeft:'50px', display:"flex", alignItems:"center"}}>
+                            <Text size={500}>Relacionados - {objectPluralLabel} ({numberOfElements})</Text>
 
-                        ))}
-                        
-                    </tr>
-                </thead>
+                            
+                        </div>
+                        <div style={{float: 'right'}}>  
+                            <Group  size="medium">
+                                <IconButton  icon={AddIcon}  appearance="minimal"  marginRight={10} onClick={()=>{setIsShown(true)}}/>
+                            </Group>
+                        </div>  
+                    </Pane>
+                    <br></br>
+                </>
+                :<></>
 
-                <tbody>
+            }
+            <div style={{display: 'flex', justifyContent:'flex-end', alignItems:'center'}}>
+                {showSearch ?
+                    <SearchInput onChange={(e) => {
+                    let val = e.target.value
+
+                    if(!val || objectListShow.length === 0){
+                        updateData(pageNum, displayNum)
+                    }else{
+                        setObjectListShow(filterListByName(objectListShow, val))
+                    }
+                    
+                }}/>
+                :<></>
+                }   
+
+                {showNumPerPage ? 
+                <div className="show" style={{padding: '10px', paddingRight:'30px'}}>
+                    <Text>Exibir:</Text>
+                    &nbsp;
+                    <Select 
+                            value={displayNum}
+                            onChange={(e) => {
+                            let op = e.target.value
+                            updateData(pageNum, op);
+                            setDisplayNum(op)
+                        }}>
+                        {
+                            numOp.map(op=>(
+                                <option value={op}>{op}</option>
+                            ))
+                        }
+                    </Select>
+                </div>
+                :<></>
+                }
+            </div>
+            
+            <Table key={()=>{uuid()}}>
+                <Table.Head>
+                    <Table.TextHeaderCell maxWidth={50}>#</Table.TextHeaderCell>
+                    {fields.map(field=>(
+                        <Table.TextHeaderCell >{field.f_label}</Table.TextHeaderCell>
+                    ))}
+                </Table.Head>
+
+                <Table.Body >
                     {
                         objectListShow.map(element=>(
-                            <tr scope="row">
-                                <td>
+                            <Table.Row key={element.id} isSelectable height={35}>
+                                <Table.Cell maxWidth={50}>
                                     <input class="form-check-input" type="checkbox" value={element.id} id="flexCheckDefault" onClick={e=>{
-                                        setObjectListSelected([...objectListSelected, e.target.value])
-                                    }}/>
-                                </td>
+                                            setObjectListSelected([...objectListSelected, e.target.value])
+                                        }}/>
+                                </Table.Cell>
 
                                 {fields.map(field=>(
-                                    <td>{
+                                    <Table.TextCell>{
                                             (field.f_main === true) ? 
                                             
-                                            <Link class="link-opacity-100" to={"/"+objectName+"/view?id="+element.id} onClick={(e)=>{goToRecord(element)}} >
+                                            <Link class="link-opacity-100" to={"/"+objectName+"/view?id="+element.id} >
                                                 {formatValue(element[field.f_name], field)}
 
                                             </Link>
                                             
                                             :
                                             formatValue(element[field.f_name], field)
-                                        }</td>        
+                                        }</Table.TextCell>     
                                 ))}
-                            </tr>
+                            </Table.Row>
                         ))
                     }
-                </tbody>
+                </Table.Body  >
 
-               
-            </table>
+            </Table>
+            <br></br>
+            <div style={{display: 'flex', flexDirection:'column', alignItems:'center', justifyContent: 'center'}}>
+                {completeView ? 
+                    <>
+                        <br></br>
+                        <Text size={13}>Páginas</Text>
 
-            <div class="d-fex text-center w-100 align-middle">
-
-                <button type="button" class="btn btn-link link-dark" onClick={e=>{removePage()}}>
-                    <FontAwesomeIcon icon={faAngleLeft} /> 
-                </button>
-                &nbsp;&nbsp;
-                página {pageNum} de {maxPages}
-                &nbsp;&nbsp;
-                <button type="button" class="btn btn-link link-dark"  onClick={e=>{addPage()}}>
-                     <FontAwesomeIcon icon={faAngleRight} /> 
-                </button>
+                        <Pagination page={pageNum} totalPages={maxPages} onNextPage={()=>{
+                            addPage()
+                        }}
+                        onPreviousPage={()=>{
+                            removePage()
+                        }}
+                        onPageChange={(page)=>{
+                            setPage(page)
+                        }}
+                        ></Pagination>
+                    </>
+                :
+                    <>
+                        <Link class="link-opacity-100" to={"/"+relatedFrom+"/"+objectName+"/list/view?id="+objectId+"&rli="+relatedListIndex} >Visualizar tudo</Link>
+                    </>
+                }
             </div>
-        
+            <UpsertPopUp existsObject={{[relatedFrom]:{id:objectId}}} isShown={isShown} setIsShown={setIsShown} configurations={props.configurations}/>
+
         </div>
     )
     
-    function goToRecord(rec){
-        console.log('Goto ', rec.id, rec.name)
-    }
-
     function removePage(){
         let newPnum = pageNum-1 
+        if(newPnum === 0) return;
+        setPageNum(newPnum)
+        updateData(newPnum, displayNum)
+    }
+    
+    function setPage(pnum){
+        let newPnum = pnum
 
         if(newPnum === 0) return;
 
         setPageNum(newPnum)
-        formatList(objectList, displayNum, ((newPnum-1)*displayNum))
+
+        updateData(newPnum, displayNum)        
     }
 
     function addPage(){
@@ -112,22 +194,36 @@ function LisrRecord(props){
         if(maxPages < newPnum) return;
 
         setPageNum(newPnum)
-
-        formatList(objectList, displayNum, ((newPnum-1)*displayNum))
+        updateData(newPnum, displayNum)
 
     }
 
-    function formatList(list, numEl, numSkip) {
-        const result = [];
-        
-        for (let i = numSkip; i < list.length; i += numSkip + 1) {
-          if (result.length === numEl) {
-            break;
-          }
-          result.push(list[i]);
-        }
-        console.log("result ", result);
-        setObjectListShow(result);
+    function filterListByName(list, searchString) {
+        const normalizedSearch = searchString
+          .toLocaleLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+      
+        return list.filter(item => {
+          const normalizedItemName = item.name
+            .toLocaleLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+      
+          return normalizedItemName.includes(normalizedSearch);
+        });
+      }
+
+    function updateData(page, display){
+        get(endpoint_get_page+'?size='+display+'&page='+(page-1)).then(result=>{
+            setMaxPages(result.totalPages)
+            setNumberOfElements(result.totalElements)
+
+            setObjectListShow(result.content)
+        }).catch(error=>[
+            
+        ])
+
     }
 
     function formatMoney(val){
@@ -179,4 +275,4 @@ function LisrRecord(props){
     }
 }
 
-export default LisrRecord;
+export default ListRecord;

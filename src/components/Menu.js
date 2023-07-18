@@ -1,69 +1,129 @@
-import React, { Component } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHome } from '@fortawesome/free-solid-svg-icons'
-import { faDoorOpen } from '@fortawesome/free-solid-svg-icons'
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
-import { faPills } from '@fortawesome/free-solid-svg-icons'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
-import { getUser, logOut} from '../config/session';
-import pic from "../config/pic/pic.png";
+import React, { useContext, useEffect } from 'react';
+import { getUpToDateUser} from '../config/session';
 import { Link} from 'react-router-dom';
+
+import { UserContext } from '../config/UserContext';
+import { Text, Avatar, Pane, Menu as Men, Icon, BarcodeIcon, HomeIcon,ChevronRightIcon,Popover, Position, ComparisonIcon, PeopleIcon, ShopIcon, InheritedGroupIcon} from 'evergreen-ui';
 
 
 function Menu() {
-    return (<nav style={{'backgroundColor':'#FFA7A7', 'height':'100%'}} class="shadow">
-              <div class="p-3 mb-30">
-                <div class="d-flex align-items-center" >
-                    <img src={getUser().profilePicture ? getUser().profilePicture.fullPath :pic} class="rounded-circle" alt="..." width="40px" style={{"maxHeight":"40px"}}/>
+  const { user, updateUser } = useContext(UserContext);
 
-                    <p class="text-truncate overflow-hidden m-0">{getUser().name}</p>
-                    <Link to="/profile"><FontAwesomeIcon style={{'color': '#000', 'width':'10px'}} icon={faChevronRight} /></Link>
-                </div>
-              </div> 
+  useEffect(() => {
+    getUpToDateUser().then((updatedUser) => {
+      updateUser(updatedUser);
+    });
+  }, []);
 
-             <ul class="nav flex-column" id="nav">
-                <li class="nav-item d-flex">
+  const menuItems = [
+    { label: 'Home', icon: HomeIcon, page_path:"/home"},
+    { label: 'Registros', icon: ComparisonIcon, 
+    submenu:[
+      { label: 'Produtos', icon: BarcodeIcon, page_path:"/product"},
+      { label: 'Lojas', icon: ShopIcon, page_path:"/shop"}
+    ]},
+    { label: 'Usuários', icon: PeopleIcon, 
+    submenu:[
+      { label: 'Usuários', icon: PeopleIcon, page_path:"/user"},
+      { label: 'Perfis', icon: InheritedGroupIcon, page_path:"/profile"}
+    ]},
+    // Add more menu items as needed
+  ];
+
+    
+  return (
+    <div style={{boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)"}}>
+      <Pane style={{ display: 'flex', height: '80px', width:'100%', justifyContent:'space-between', 
+      alignItems: 'center'}}>
+        <div className="logo" style={{ marginRight: '20px' }}>
+          <img height="80px" src={process.env.PUBLIC_URL +"/logo.png"} alt=""></img>
+        </div>
+        
+        <Men width={'100%'}>
+          <div style={{ display: 'flex'}}>
+            
+            <div className="items" style={{ display: 'flex'}}>
                   
-                  <Link class="nav-link active" to="/home" onClick={(e)=>{activeElement(e)}} style={{'color':'#000'}}>
-                  <FontAwesomeIcon style={{'color': '#000', 'width':'26px'}} icon={faHome} /> &nbsp;
-                    Início
+              {menuItems.map((item, index) => (
+                item.submenu ? 
+                  <div  style={{marginRight:'5px'}}>
+                    <Popover
+                      position={Position.BOTTOM_LEFT}
+                      content={
+                        <>
+                        {
+                          item.submenu.map((subItem, subIndex) => (
+                            <div>
+                              <Link to={subItem.page_path}>
+
+                                <Men.Item key={subIndex} >
+                                  <Icon icon={subItem.icon} size={13} />
+                                  &nbsp;
+                                  &nbsp;
+                                  {subItem.label}
+                                </Men.Item>
+                              </Link>
+                            </div>
+                          ))
+                        }
+                        </>
+                        
+                      }
+                    >
+                      <Men.Item key={index} >
+                          <Icon icon={item.icon} size={13} />
+                          &nbsp;
+                          &nbsp;
+                          {item.label}
+                      </Men.Item>
+                    </Popover>
+                  </div>
+                  :
+                <>
+                  <Link to={item.page_path} style={{marginRight:'5px'}}>
+
+                    <Men.Item key={index} >
+                      <Icon icon={item.icon} size={13} />
+                      &nbsp;
+                      &nbsp;
+                      {item.label}
+                    </Men.Item>
                   </Link>
+                  
+                </>
+              
+              ))}
+            </div>
+          </div>
+        </Men>
 
-                </li>
-
-                <li class="nav-item">
-                  <Link class="nav-link" to="/medicine" onClick={(e)=>{activeElement(e)}} style={{'color':'#000'}}><FontAwesomeIcon style={{'color': '#000', 'width':'26px'}} icon={faPills} /> &nbsp;
-                    Remédios</Link>
-                </li>
-
-                <li class="nav-item">
-                  <Link class="nav-link" to="/user" onClick={(e)=>{activeElement(e)}} style={{'color':'#000'}}><FontAwesomeIcon style={{'color': '#000', 'width':'26px'}} icon={faUser} /> &nbsp;
-                    Usuários</Link>
-                </li>
-
+        <div className="avatar"
+              style={{
+                marginRight:"30px",
+                marginLeft: 'auto'
+              }}>
+          <Link to="/myprofile" height="45px" style={{display:"flex"}}>
                 
-                <li class="nav-item">
-                <Link class="nav-link" to="/" onClick={(e)=>{activeElement(e); logOut() }} style={{'color':'#000'}}>
-                  <FontAwesomeIcon style={{'color': '#000', 'width':'26px'}} icon={faDoorOpen} /> &nbsp;
-                    Sair
-                  </Link>
-                </li>
+            <div style={{display:"flex", alignItems:"center"}}>
+              <Avatar
+                  src=""
+                  name={user.name} 
+                  size={45}
+                />
+                &nbsp;
+                &nbsp;
 
-              </ul>
-            </nav>
-   )
+              <Text size={500}>{user.name}</Text>
+              <Icon icon={ChevronRightIcon} size={14} />
+            </div>
+            
+          </Link>
+        </div>
+      </Pane>
+    </div>
+  );
 
 
-  function activeElement(event){
-      let links = document.getElementById('nav').getElementsByClassName('nav-link')
-      for(let link of links){
-          link.classList.remove('active')
-      }
-
-      let element = event.target
-      element.classList.add('active')
-
-  }
 
 }
 

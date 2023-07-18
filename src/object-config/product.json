@@ -1,0 +1,72 @@
+{
+    "o_name":"product",
+    "o_label":"Produto",
+    "o_plural_label":"Produtos",
+    "columns":2,
+    "endpoints":{
+        "get":"product/{id}",
+        "get_all":"product/all",
+        "get_page":"product/all/view",
+        "save":"product/save",
+        "update":"product/update",
+        "delete":"product/delete/{id}"
+    },
+    "fields":[
+        {"f_name":"name",
+         "f_main":true,
+         "f_label":"Nome",
+         "f_type":"text"},
+
+          {"f_name":"description",
+          "f_label":"Descrição",
+          "f_type":"text"},
+
+          {"f_name":"barcode",
+          "f_label":"Código de barras",
+          "f_format":"text",
+          "f_type":"text"},
+
+          {"f_name":"shop",
+            "f_label":"Loja",
+            "f_type":"text",
+            "f_format":"lookup",
+            "d_prop":"name",
+            "f_hide_on_list":false,
+            "f_icon":"ShopIcon",
+            "lookup":{
+              "l_label":"Loja",
+              "l_icon":"ShopIcon",
+              "l_plural_label":"Lojas",
+              "l_fields":[
+                {"l_f_name":"name",
+                 "l_f_main":true,
+                 "l_f_label":"Nome",
+                 "l_f_type":"text"},
+
+                 {"l_f_name":"description",
+                  "l_f_label":"Descrição",
+                  "l_f_type":"text"}
+              ],
+              "endpoints":{
+                  "get":"shop",
+                  "get_all":"shop/all"
+              }
+            }}, 
+
+          {"f_name":"purchase_price",
+          "f_label":"Preço de compra",
+          "f_format":"money",
+          "f_type":"number"},
+
+          {"f_name":"sale_price",
+          "f_label":"Preço de venda",
+          "f_format":"money",
+          "f_type":"number"},
+
+          {"f_name":"quantity",
+          "f_label":"Quantidade",
+          "f_format":"number",
+          "f_type":"number"}
+    ]
+
+}

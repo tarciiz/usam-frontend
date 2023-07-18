@@ -1,7 +1,7 @@
 import {getUser} from './session';
 
-const HOST = 'http://localhost:8083/'
-//const HOST = 'https://tarciiz-saude-server.loca.lt/'
+const HOST = 'http://localhost:8082/'
+//const HOST = 'https://tarciiz-web-server.loca.lt/'
 
 const API = 'api/v1/app/'
 
@@ -29,6 +29,26 @@ export async function get(endpoint){
     }catch(error){
         
         // showMessage({message:error.type + ' - ' + error.status, type:'error'})
+        throw error.text
+    }
+}
+
+export async function del(endpoint){
+    try{
+        const fetched = await fetch(HOST+API+endpoint, {method:'DELETE', headers: headers})
+        
+        if (fetched.ok){
+            try{
+                const result = await fetched.json();
+                return result
+
+            }catch(error){
+                return null;
+            }
+        }
+        throw fetched
+    }catch(error){
+      
         throw error
     }
 }
@@ -38,32 +58,8 @@ export async function get_params(endpoint, paramsMap){
     let params = Object.entries(paramsMap).map(a => a.join('='));
      try{
         let url = HOST+API+endpoint+'?'+params.join('&')
-        console.log('url', url)
+        
          const fetched = await fetch(url, {method:'GET', headers: headers})
-         console.log('fecthed ', fetched)
-        
-        if (fetched.ok){
-            try{
-                const result = await fetched.json();
-                return result
-
-            }catch(error){
-                return null;
-            }
-        }
-        throw fetched
-    }catch(error){
-        
-        console.log('Erro', error)
-        // showMessage({message:error.type + ' - ' + error.status, type:'error'})
-        throw error
-    }
-}
-
-export async function post(endpoint, body){
-    
-    try{
-        const fetched = await fetch(HOST+API+endpoint, {method:'POST', headers: headers, body:JSON.stringify(body)})
         
         if (fetched.ok){
             try{
@@ -81,6 +77,33 @@ export async function post(endpoint, body){
         throw error
     }
 }
+
+export async function post(endpoint, body) {
+    if(body.id) body.id = body.id.toString()
+    try {
+      const fetched = await fetch(HOST + API + endpoint, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(body),
+      });
+  
+      if (fetched.ok) {
+        try {
+          const result = await fetched.json();
+          return result;
+        } catch (error) {
+          return null;
+        }
+      } else {
+        // Handle non-200 status codes
+        const errorResponse = await fetched.json();
+        throw new Error(`Request failed with status ${fetched.status}: ${errorResponse.message}`);
+      }
+    } catch (error) {
+      // showMessage({ message: error.type + ' - ' + error.status, type: 'error' });
+      throw error;
+    }
+  }
 
 export async function login_user(login, password){
     
