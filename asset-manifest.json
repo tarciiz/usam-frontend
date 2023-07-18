@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/usam-frontend/static/css/main.30d9e793.css",
+    "main.js": "/usam-frontend/static/js/main.74532d41.js",
+    "static/js/787.946f088f.chunk.js": "/usam-frontend/static/js/787.946f088f.chunk.js",
+    "static/media/blueprint-icons-20.svg?": "/usam-frontend/static/media/blueprint-icons-20.d42c0e95d96f74aff808.svg",
+    "static/media/blueprint-icons-16.svg?": "/usam-frontend/static/media/blueprint-icons-16.0714a11a4fb5ff837afb.svg",
+    "static/media/blueprint-icons-20.eot?": "/usam-frontend/static/media/blueprint-icons-20.f7d18295d5c386a1a9b5.eot",
+    "static/media/blueprint-icons-20.ttf?": "/usam-frontend/static/media/blueprint-icons-20.5e8bcc2fa7b81492f163.ttf",
+    "static/media/blueprint-icons-16.eot?": "/usam-frontend/static/media/blueprint-icons-16.14e70b6793c6b84b0760.eot",
+    "static/media/blueprint-icons-16.ttf?": "/usam-frontend/static/media/blueprint-icons-16.4fdbe723235ba0fc46fb.ttf",
+    "static/media/blueprint-icons-20.woff?": "/usam-frontend/static/media/blueprint-icons-20.7f441e84a24ef32d88d9.woff",
+    "static/media/blueprint-icons-16.woff?": "/usam-frontend/static/media/blueprint-icons-16.f5b1a9d55dd59fe717ab.woff",
+    "static/media/blueprint-icons-20.woff2?": "/usam-frontend/static/media/blueprint-icons-20.f356a02cac03708c9328.woff2",
+    "static/media/blueprint-icons-16.woff2?": "/usam-frontend/static/media/blueprint-icons-16.582f87288ff1d1f0dfae.woff2",
+    "index.html": "/usam-frontend/index.html",
+    "main.30d9e793.css.map": "/usam-frontend/static/css/main.30d9e793.css.map",
+    "main.74532d41.js.map": "/usam-frontend/static/js/main.74532d41.js.map",
+    "787.946f088f.chunk.js.map": "/usam-frontend/static/js/787.946f088f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.30d9e793.css",
+    "static/js/main.74532d41.js"
+  ]
+}
