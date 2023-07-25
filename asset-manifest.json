@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/usam-frontend/static/css/main.30d9e793.css",
-    "main.js": "/usam-frontend/static/js/main.f907e391.js",
+    "main.js": "/usam-frontend/static/js/main.493de555.js",
     "static/js/787.946f088f.chunk.js": "/usam-frontend/static/js/787.946f088f.chunk.js",
     "static/media/blueprint-icons-20.svg?": "/usam-frontend/static/media/blueprint-icons-20.d42c0e95d96f74aff808.svg",
     "static/media/blueprint-icons-16.svg?": "/usam-frontend/static/media/blueprint-icons-16.0714a11a4fb5ff837afb.svg",
@@ -15,11 +15,11 @@
     "static/media/blueprint-icons-16.woff2?": "/usam-frontend/static/media/blueprint-icons-16.582f87288ff1d1f0dfae.woff2",
     "index.html": "/usam-frontend/index.html",
     "main.30d9e793.css.map": "/usam-frontend/static/css/main.30d9e793.css.map",
-    "main.f907e391.js.map": "/usam-frontend/static/js/main.f907e391.js.map",
+    "main.493de555.js.map": "/usam-frontend/static/js/main.493de555.js.map",
     "787.946f088f.chunk.js.map": "/usam-frontend/static/js/787.946f088f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.30d9e793.css",
-    "static/js/main.f907e391.js"
+    "static/js/main.493de555.js"
   ]
 }
